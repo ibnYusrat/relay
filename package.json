@@ -27,11 +27,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/glittercowboy/relay.git"
+    "url": "git+https://github.com/ibnyusrat/relay.git"
   },
-  "homepage": "https://github.com/glittercowboy/relay",
+  "homepage": "https://github.com/ibnyusrat/relay",
   "bugs": {
-    "url": "https://github.com/glittercowboy/relay/issues"
+    "url": "https://github.com/ibnyusrat/relay/issues"
   },
   "engines": {
     "node": ">=16.7.0"

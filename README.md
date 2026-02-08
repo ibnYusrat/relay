@@ -8,7 +8,7 @@
 
 [![npm version](https://img.shields.io/npm/v/relay-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/relay-cc)
 [![npm downloads](https://img.shields.io/npm/dm/relay-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/relay-cc)
-[![GitHub stars](https://img.shields.io/github/stars/glittercowboy/relay?style=for-the-badge&logo=github&color=181717)](https://github.com/glittercowboy/relay)
+[![GitHub stars](https://img.shields.io/github/stars/ibnyusrat/relay?style=for-the-badge&logo=github&color=181717)](https://github.com/ibnyusrat/relay)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
 <br>
@@ -140,7 +140,7 @@ Use `--claude`, `--opencode`, `--gemini`, or `--all` to skip the runtime prompt.
 Clone the repository and run the installer locally:
 
 ```bash
-git clone https://github.com/glittercowboy/relay.git
+git clone https://github.com/ibnyusrat/relay.git
 cd relay
 node bin/install.js --claude --local
 ```
@@ -413,28 +413,9 @@ This removes all Relay commands, agents, hooks, and settings while preserving yo
 
 ---
 
-## Community Ports
+## Acknowledgments
 
-OpenCode and Gemini CLI are now natively supported via `npx relay-cc`.
-
-These community ports pioneered multi-runtime support:
-
-| Project | Platform | Description |
-|---------|----------|-------------|
-| [relay-opencode](https://github.com/rokicool/relay-opencode) | OpenCode | Original OpenCode adaptation |
-| relay-gemini (archived) | Gemini CLI | Original Gemini adaptation by uberfuzzy |
-
----
-
-## Star History
-
-<a href="https://star-history.com/#glittercowboy/relay&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=glittercowboy/relay&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=glittercowboy/relay&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=glittercowboy/relay&type=Date" />
- </picture>
-</a>
+This project is a fork of [Relay](https://github.com/glittercowboy/relay) by [glittercowboy](https://github.com/glittercowboy), originally created as [Get Shit Done (GSD)](https://github.com/glittercowboy/relay). All credit for the core architecture — the ticket-driven workflow, subagent orchestration, context engineering, and the command/agent system — goes to the original project.
 
 ---
 
