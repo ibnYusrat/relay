@@ -4,7 +4,7 @@
 List **all** files that are loaded/referenced when running the command `@commands/gsd/new-project.md` in this repo. The output must be exhaustive and user-facing.
 
 ## Context
-Repo: `claude-code-resources/get-shit-done`.
+Repo: `claude-code-resources/relay`.
 We need a dependency map for the `@commands/gsd/new-project.md` command. This includes any files it directly references and any files referenced transitively by workflows/templates it invokes. The final list should be presented in the SUMMARY.
 
 Constraints:

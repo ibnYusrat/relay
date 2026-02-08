@@ -1,0 +1,40 @@
+{
+  "mode": "interactive",
+  "depth": "standard",
+  "integration": {
+    "type": null,
+    "project_key": null,
+    "mcp_server": null
+  },
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true
+  },
+  "planning": {
+    "commit_docs": true,
+    "search_gitignored": false
+  },
+  "parallelization": {
+    "enabled": true,
+    "plan_level": true,
+    "task_level": false,
+    "skip_checkpoints": true,
+    "max_concurrent_agents": 3,
+    "min_plans_for_parallel": 2
+  },
+  "gates": {
+    "confirm_analysis": true,
+    "confirm_plan": true,
+    "confirm_execution": true,
+    "confirm_sync": true,
+    "issues_review": true
+  },
+  "git": {
+    "ticket_branch_template": "{ticket_id}/{slug}"
+  },
+  "safety": {
+    "always_confirm_destructive": true,
+    "always_confirm_external_services": true
+  }
+}

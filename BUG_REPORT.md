@@ -1,4 +1,4 @@
-# Bug Report - Get Shit Done Codebase Review
+# Bug Report - Relay Codebase Review
 
 **Date:** 2026-01-31
 **Reviewer:** Claude Code Agent
@@ -10,7 +10,7 @@
 
 ### 1. Missing error handling in statusline.js for file system operations
 
-**File:** `hooks/gsd-statusline.js:51-54`
+**File:** `hooks/relay-statusline.js:51-54`
 **Severity:** High
 **Type:** Runtime error / crash
 
@@ -56,10 +56,10 @@ if (session && fs.existsSync(todosDir)) {
 ### 2. Fragile JSON parsing in bash workflows
 
 **Files:**
-- `get-shit-done/workflows/execute-phase.md:20`
-- `commands/gsd/execute-phase.md:45`
-- `get-shit-done/workflows/execute-phase.md:62`
-- `agents/gsd-executor.md:47`
+- `relay/workflows/execute-phase.md:20`
+- `commands/relay/execute-phase.md:45`
+- `relay/workflows/execute-phase.md:62`
+- `agents/relay-executor.md:47`
 
 **Severity:** High
 **Type:** Logic error / silent failure
@@ -70,11 +70,11 @@ The workflows use fragile grep/sed patterns to extract JSON values instead of pr
 **Examples:**
 ```bash
 # Fragile - fails if JSON is minified or has different spacing
-MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
+MODEL_PROFILE=$(cat .relay/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
 
-COMMIT_PLANNING_DOCS=$(cat .planning/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
 
-BRANCHING_STRATEGY=$(cat .planning/config.json 2>/dev/null | grep -o '"branching_strategy"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/' || echo "none")
+BRANCHING_STRATEGY=$(cat .relay/config.json 2>/dev/null | grep -o '"branching_strategy"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/' || echo "none")
 ```
 
 **Problems:**
@@ -87,13 +87,13 @@ BRANCHING_STRATEGY=$(cat .planning/config.json 2>/dev/null | grep -o '"branching
 Use `jq` for robust JSON parsing:
 ```bash
 # Robust JSON parsing
-MODEL_PROFILE=$(jq -r '.model_profile // "balanced"' .planning/config.json 2>/dev/null || echo "balanced")
+MODEL_PROFILE=$(jq -r '.model_profile // "balanced"' .relay/config.json 2>/dev/null || echo "balanced")
 
-COMMIT_PLANNING_DOCS=$(jq -r '.commit_docs // true' .planning/config.json 2>/dev/null | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(jq -r '.commit_docs // true' .relay/config.json 2>/dev/null | grep -o 'true\|false' || echo "true")
 
-BRANCHING_STRATEGY=$(jq -r '.branching_strategy // "none"' .planning/config.json 2>/dev/null || echo "none")
+BRANCHING_STRATEGY=$(jq -r '.branching_strategy // "none"' .relay/config.json 2>/dev/null || echo "none")
 
-PHASE_BRANCH_TEMPLATE=$(jq -r '.phase_branch_template // "gsd/phase-{phase}-{slug}"' .planning/config.json 2>/dev/null || echo "gsd/phase-{phase}-{slug}")
+PHASE_BRANCH_TEMPLATE=$(jq -r '.phase_branch_template // "relay/phase-{phase}-{slug}"' .relay/config.json 2>/dev/null || echo "relay/phase-{phase}-{slug}")
 ```
 
 **Impact:**
@@ -103,7 +103,7 @@ Without this fix, configuration settings may silently fall back to defaults even
 
 ### 3. Violation of stated git commit rules
 
-**File:** `commands/gsd/execute-phase.md:94`
+**File:** `commands/relay/execute-phase.md:94`
 **Severity:** Medium
 **Type:** Inconsistency with documented rules
 
@@ -165,7 +165,7 @@ Add validation for hex color format:
 
 ### 5. Potential issue with branch variable expansion
 
-**File:** `get-shit-done/workflows/execute-phase.md:100-103`
+**File:** `relay/workflows/execute-phase.md:100-103`
 **Severity:** Low
 **Type:** Shell safety
 
@@ -185,7 +185,7 @@ Ensure all variable expansions are properly quoted, especially in sed operations
 
 ### 6. Missing CONTEXT.md reference documentation
 
-**File:** `agents/gsd-executor.md:69`
+**File:** `agents/relay-executor.md:69`
 **Severity:** Low
 **Type:** Documentation gap
 
@@ -200,7 +200,7 @@ The executor mentions that plans can reference CONTEXT.md but doesn't explain ho
 **Fix:**
 Add clarity about how CONTEXT.md is accessed:
 ```markdown
-**If plan references CONTEXT.md:** Read .planning/phases/{phase}/CONTEXT.md for the user's vision. Honor this context throughout execution. The file provides how they imagine it working, what's essential, and what's out of scope.
+**If plan references CONTEXT.md:** Read .relay/tickets/{phase}/CONTEXT.md for the user's vision. Honor this context throughout execution. The file provides how they imagine it working, what's essential, and what's out of scope.
 ```
 
 ---
@@ -235,12 +235,12 @@ Establish consistent error handling patterns across the codebase, especially for
 **Type:** Maintainability
 
 **Issue:**
-Paths like `~/.claude/`, `.planning/`, etc. are hardcoded in many places. Changes to directory structure would require updates in multiple files.
+Paths like `~/.claude/`, `.relay/`, etc. are hardcoded in many places. Changes to directory structure would require updates in multiple files.
 
 **Examples:**
-- `hooks/gsd-statusline.js:49` - hardcoded `~/.claude/todos`
-- `hooks/gsd-check-update.js:12` - hardcoded `~/.claude/`
-- Multiple workflow files reference `.planning/`
+- `hooks/relay-statusline.js:49` - hardcoded `~/.claude/todos`
+- `hooks/relay-check-update.js:12` - hardcoded `~/.claude/`
+- Multiple workflow files reference `.relay/`
 
 **Recommendation:**
 Consider centralizing path constants in a shared configuration module.

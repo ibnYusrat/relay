@@ -1,14 +1,14 @@
 {
-  "name": "get-shit-done-cc",
-  "version": "1.11.3",
-  "description": "A meta-prompting, context engineering and spec-driven development system for Claude Code, OpenCode and Gemini by TÂCHES.",
+  "name": "relay-cc",
+  "version": "2.0.0",
+  "description": "Your AI dev agent, connected to your team's workflow. For Claude Code, OpenCode and Gemini CLI by TÂCHES.",
   "bin": {
-    "get-shit-done-cc": "bin/install.js"
+    "relay-cc": "bin/install.js"
   },
   "files": [
     "bin",
     "commands",
-    "get-shit-done",
+    "relay",
     "agents",
     "hooks/dist",
     "scripts"
@@ -27,11 +27,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/glittercowboy/get-shit-done.git"
+    "url": "git+https://github.com/glittercowboy/relay.git"
   },
-  "homepage": "https://github.com/glittercowboy/get-shit-done",
+  "homepage": "https://github.com/glittercowboy/relay",
   "bugs": {
-    "url": "https://github.com/glittercowboy/get-shit-done/issues"
+    "url": "https://github.com/glittercowboy/relay/issues"
   },
   "engines": {
     "node": ">=16.7.0"

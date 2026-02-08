@@ -9,7 +9,7 @@
 
 ### 1. ✅ Fixed: Missing error handling in statusline.js
 
-**File:** `hooks/gsd-statusline.js`
+**File:** `hooks/relay-statusline.js`
 **Change:** Wrapped directory reading operations in try-catch block
 
 **Before:**
@@ -69,7 +69,7 @@ if (session && fs.existsSync(todosDir)) {
 
 ### 3. ✅ Fixed: Git add rules violation in execute-phase.md
 
-**File:** `commands/gsd/execute-phase.md`
+**File:** `commands/relay/execute-phase.md`
 **Change:** Replaced `git add -u` with individual file staging
 
 **Before:**
@@ -99,22 +99,22 @@ git commit -m "fix({phase}): orchestrator corrections"
 **Location:** Multiple workflow files
 
 **Files affected:**
-- `get-shit-done/workflows/execute-phase.md:20, 62, 76-77`
-- `commands/gsd/execute-phase.md:45, 100`
-- `agents/gsd-executor.md:47`
+- `relay/workflows/execute-phase.md:20, 62, 76-77`
+- `commands/relay/execute-phase.md:45, 100`
+- `agents/relay-executor.md:47`
 
 **Current approach:**
 ```bash
-MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
+MODEL_PROFILE=$(cat .relay/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
 ```
 
 **Recommended fix:**
 ```bash
-MODEL_PROFILE=$(jq -r '.model_profile // "balanced"' .planning/config.json 2>/dev/null || echo "balanced")
+MODEL_PROFILE=$(jq -r '.model_profile // "balanced"' .relay/config.json 2>/dev/null || echo "balanced")
 ```
 
 **Workaround for users:**
-- Ensure `.planning/config.json` is properly formatted with consistent spacing
+- Ensure `.relay/config.json` is properly formatted with consistent spacing
 - Always quote string values in JSON
 - Avoid special characters in configuration values
 
@@ -131,7 +131,7 @@ MODEL_PROFILE=$(jq -r '.model_profile // "balanced"' .planning/config.json 2>/de
 **Test case:** Delete files while statusline is reading them
 ```bash
 # Terminal 1: Watch statusline
-while true; do node hooks/gsd-statusline.js; sleep 1; done
+while true; do node hooks/relay-statusline.js; sleep 1; done
 
 # Terminal 2: Create and delete files rapidly
 mkdir -p ~/.claude/todos
@@ -189,9 +189,9 @@ echo "change" > file2.txt
 ## [Unreleased]
 
 ### Fixed
-- **hooks/gsd-statusline.js**: Added error handling for file system operations to prevent crashes
+- **hooks/relay-statusline.js**: Added error handling for file system operations to prevent crashes
 - **bin/install.js**: Added validation for hex color values to prevent invalid config
-- **commands/gsd/execute-phase.md**: Fixed git staging to use individual files instead of git add -u
+- **commands/relay/execute-phase.md**: Fixed git staging to use individual files instead of git add -u
 
 ### Known Issues
 - JSON config parsing uses fragile grep/sed patterns - will be addressed in future release

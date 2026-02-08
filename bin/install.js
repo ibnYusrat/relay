@@ -106,16 +106,16 @@ function getGlobalDir(runtime, explicitDir = null) {
 }
 
 const banner = '\n' +
-  cyan + '   ██████╗ ███████╗██████╗\n' +
-  '  ██╔════╝ ██╔════╝██╔══██╗\n' +
-  '  ██║  ███╗███████╗██║  ██║\n' +
-  '  ██║   ██║╚════██║██║  ██║\n' +
-  '  ╚██████╔╝███████║██████╔╝\n' +
-  '   ╚═════╝ ╚══════╝╚═════╝' + reset + '\n' +
+  cyan + '  ██████╗ ███████╗██╗      █████╗ ██╗   ██╗\n' +
+  '  ██╔══██╗██╔════╝██║     ██╔══██╗╚██╗ ██╔╝\n' +
+  '  ██████╔╝█████╗  ██║     ███████║ ╚████╔╝\n' +
+  '  ██╔══██╗██╔══╝  ██║     ██╔══██║  ╚██╔╝\n' +
+  '  ██║  ██║███████╗███████╗██║  ██║   ██║\n' +
+  '  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝' + reset + '\n' +
   '\n' +
-  '  Get Shit Done ' + dim + 'v' + pkg.version + reset + '\n' +
-  '  A meta-prompting, context engineering and spec-driven\n' +
-  '  development system for Claude Code, OpenCode, and Gemini by TÂCHES.\n';
+  '  Relay ' + dim + 'v' + pkg.version + reset + '\n' +
+  '  Your AI dev agent, connected to your team\'s workflow.\n' +
+  '  For Claude Code, OpenCode, and Gemini CLI by TÂCHES.\n';
 
 // Parse --config-dir argument
 function parseConfigDirArg() {
@@ -149,7 +149,7 @@ console.log(banner);
 
 // Show help if requested
 if (hasHelp) {
-  console.log(`  ${yellow}Usage:${reset} npx get-shit-done-cc [options]\n\n  ${yellow}Options:${reset}\n    ${cyan}-g, --global${reset}              Install globally (to config directory)\n    ${cyan}-l, --local${reset}               Install locally (to current directory)\n    ${cyan}--claude${reset}                  Install for Claude Code only\n    ${cyan}--opencode${reset}                Install for OpenCode only\n    ${cyan}--gemini${reset}                  Install for Gemini only\n    ${cyan}--all${reset}                     Install for all runtimes\n    ${cyan}-u, --uninstall${reset}           Uninstall GSD (remove all GSD files)\n    ${cyan}-c, --config-dir <path>${reset}   Specify custom config directory\n    ${cyan}-h, --help${reset}                Show this help message\n    ${cyan}--force-statusline${reset}        Replace existing statusline config\n\n  ${yellow}Examples:${reset}\n    ${dim}# Interactive install (prompts for runtime and location)${reset}\n    npx get-shit-done-cc\n\n    ${dim}# Install for Claude Code globally${reset}\n    npx get-shit-done-cc --claude --global\n\n    ${dim}# Install for Gemini globally${reset}\n    npx get-shit-done-cc --gemini --global\n\n    ${dim}# Install for all runtimes globally${reset}\n    npx get-shit-done-cc --all --global\n\n    ${dim}# Install to custom config directory${reset}\n    npx get-shit-done-cc --claude --global --config-dir ~/.claude-bc\n\n    ${dim}# Install to current project only${reset}\n    npx get-shit-done-cc --claude --local\n\n    ${dim}# Uninstall GSD from Claude Code globally${reset}\n    npx get-shit-done-cc --claude --global --uninstall\n\n  ${yellow}Notes:${reset}\n    The --config-dir option is useful when you have multiple configurations.\n    It takes priority over CLAUDE_CONFIG_DIR / GEMINI_CONFIG_DIR environment variables.\n`);
+  console.log(`  ${yellow}Usage:${reset} npx relay-cc [options]\n\n  ${yellow}Options:${reset}\n    ${cyan}-g, --global${reset}              Install globally (to config directory)\n    ${cyan}-l, --local${reset}               Install locally (to current directory)\n    ${cyan}--claude${reset}                  Install for Claude Code only\n    ${cyan}--opencode${reset}                Install for OpenCode only\n    ${cyan}--gemini${reset}                  Install for Gemini only\n    ${cyan}--all${reset}                     Install for all runtimes\n    ${cyan}-u, --uninstall${reset}           Uninstall Relay (remove all Relay files)\n    ${cyan}-c, --config-dir <path>${reset}   Specify custom config directory\n    ${cyan}-h, --help${reset}                Show this help message\n    ${cyan}--force-statusline${reset}        Replace existing statusline config\n\n  ${yellow}Examples:${reset}\n    ${dim}# Interactive install (prompts for runtime and location)${reset}\n    npx relay-cc\n\n    ${dim}# Install for Claude Code globally${reset}\n    npx relay-cc --claude --global\n\n    ${dim}# Install for Gemini globally${reset}\n    npx relay-cc --gemini --global\n\n    ${dim}# Install for all runtimes globally${reset}\n    npx relay-cc --all --global\n\n    ${dim}# Install to custom config directory${reset}\n    npx relay-cc --claude --global --config-dir ~/.claude-bc\n\n    ${dim}# Install to current project only${reset}\n    npx relay-cc --claude --local\n\n    ${dim}# Uninstall Relay from Claude Code globally${reset}\n    npx relay-cc --claude --global --uninstall\n\n  ${yellow}Notes:${reset}\n    The --config-dir option is useful when you have multiple configurations.\n    It takes priority over CLAUDE_CONFIG_DIR / GEMINI_CONFIG_DIR environment variables.\n`);
   process.exit(0);
 }
 
@@ -443,8 +443,8 @@ function convertClaudeToOpencodeFrontmatter(content) {
   convertedContent = convertedContent.replace(/\bAskUserQuestion\b/g, 'question');
   convertedContent = convertedContent.replace(/\bSlashCommand\b/g, 'skill');
   convertedContent = convertedContent.replace(/\bTodoWrite\b/g, 'todowrite');
-  // Replace /gsd:command with /gsd-command for opencode (flat command structure)
-  convertedContent = convertedContent.replace(/\/gsd:/g, '/gsd-');
+  // Replace /relay:command with /relay-command for opencode (flat command structure)
+  convertedContent = convertedContent.replace(/\/relay:/g, '/relay-');
   // Replace ~/.claude with ~/.config/opencode (OpenCode's correct config location)
   convertedContent = convertedContent.replace(/~\/\.claude\b/g, '~/.config/opencode');
 
@@ -584,12 +584,12 @@ function convertClaudeToGeminiToml(content) {
 
 /**
  * Copy commands to a flat structure for OpenCode
- * OpenCode expects: command/gsd-help.md (invoked as /gsd-help)
- * Source structure: commands/gsd/help.md
- * 
- * @param {string} srcDir - Source directory (e.g., commands/gsd/)
+ * OpenCode expects: command/relay-help.md (invoked as /relay-help)
+ * Source structure: commands/relay/help.md
+ *
+ * @param {string} srcDir - Source directory (e.g., commands/relay/)
  * @param {string} destDir - Destination directory (e.g., command/)
- * @param {string} prefix - Prefix for filenames (e.g., 'gsd')
+ * @param {string} prefix - Prefix for filenames (e.g., 'relay')
  * @param {string} pathPrefix - Path prefix for file references
  * @param {string} runtime - Target runtime ('claude' or 'opencode')
  */
@@ -598,7 +598,7 @@ function copyFlattenedCommands(srcDir, destDir, prefix, pathPrefix, runtime) {
     return;
   }
   
-  // Remove old gsd-*.md files before copying new ones
+  // Remove old relay-*.md files before copying new ones
   if (fs.existsSync(destDir)) {
     for (const file of fs.readdirSync(destDir)) {
       if (file.startsWith(`${prefix}-`) && file.endsWith('.md')) {
@@ -616,10 +616,10 @@ function copyFlattenedCommands(srcDir, destDir, prefix, pathPrefix, runtime) {
     
     if (entry.isDirectory()) {
       // Recurse into subdirectories, adding to prefix
-      // e.g., commands/gsd/debug/start.md -> command/gsd-debug-start.md
+      // e.g., commands/relay/debug/start.md -> command/relay-debug-start.md
       copyFlattenedCommands(srcPath, destDir, `${prefix}-${entry.name}`, pathPrefix, runtime);
     } else if (entry.name.endsWith('.md')) {
-      // Flatten: help.md -> gsd-help.md
+      // Flatten: help.md -> relay-help.md
       const baseName = entry.name.replace('.md', '');
       const destName = `${prefix}-${baseName}.md`;
       const destPath = path.join(destDir, destName);
@@ -691,12 +691,149 @@ function copyWithPathReplacement(srcDir, destDir, pathPrefix, runtime) {
 }
 
 /**
- * Clean up orphaned files from previous GSD versions
+ * Migrate from GSD to Relay — clean up old GSD artifacts when upgrading
+ */
+function migrateFromGsd(configDir) {
+  let migrated = false;
+
+  // Remove old GSD commands directory
+  const gsdCommandsDir = path.join(configDir, 'commands', 'gsd');
+  if (fs.existsSync(gsdCommandsDir)) {
+    fs.rmSync(gsdCommandsDir, { recursive: true });
+    console.log(`  ${green}✓${reset} Migrated commands/gsd/ → commands/relay/`);
+    migrated = true;
+  }
+
+  // Remove old get-shit-done directory
+  const gsdDir = path.join(configDir, 'get-shit-done');
+  if (fs.existsSync(gsdDir)) {
+    fs.rmSync(gsdDir, { recursive: true });
+    console.log(`  ${green}✓${reset} Migrated get-shit-done/ → relay/`);
+    migrated = true;
+  }
+
+  // Remove old GSD agents (gsd-*.md files)
+  const agentsDir = path.join(configDir, 'agents');
+  if (fs.existsSync(agentsDir)) {
+    const files = fs.readdirSync(agentsDir);
+    let agentCount = 0;
+    for (const file of files) {
+      if (file.startsWith('gsd-') && file.endsWith('.md')) {
+        fs.unlinkSync(path.join(agentsDir, file));
+        agentCount++;
+      }
+    }
+    if (agentCount > 0) {
+      console.log(`  ${green}✓${reset} Migrated ${agentCount} gsd-* agents → relay-*`);
+      migrated = true;
+    }
+  }
+
+  // Remove old GSD hooks
+  const hooksDir = path.join(configDir, 'hooks');
+  if (fs.existsSync(hooksDir)) {
+    const gsdHooks = ['gsd-statusline.js', 'gsd-check-update.js', 'gsd-check-update.sh'];
+    for (const hook of gsdHooks) {
+      const hookPath = path.join(hooksDir, hook);
+      if (fs.existsSync(hookPath)) {
+        fs.unlinkSync(hookPath);
+        migrated = true;
+      }
+    }
+  }
+
+  // Clean up GSD references in settings.json
+  const settingsPath = path.join(configDir, 'settings.json');
+  if (fs.existsSync(settingsPath)) {
+    let settings = readSettings(settingsPath);
+    let settingsModified = false;
+
+    // Update statusline from gsd to relay
+    if (settings.statusLine && settings.statusLine.command &&
+        settings.statusLine.command.includes('gsd-statusline')) {
+      settings.statusLine.command = settings.statusLine.command.replace(
+        /gsd-statusline/g, 'relay-statusline'
+      );
+      settingsModified = true;
+    }
+
+    // Update hooks from gsd to relay
+    if (settings.hooks) {
+      for (const eventType of Object.keys(settings.hooks)) {
+        const hookEntries = settings.hooks[eventType];
+        if (Array.isArray(hookEntries)) {
+          for (const entry of hookEntries) {
+            if (entry.hooks && Array.isArray(entry.hooks)) {
+              for (const h of entry.hooks) {
+                if (h.command && h.command.includes('gsd-check-update')) {
+                  h.command = h.command.replace(/gsd-check-update/g, 'relay-check-update');
+                  settingsModified = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (settingsModified) {
+      writeSettings(settingsPath, settings);
+      console.log(`  ${green}✓${reset} Updated settings.json (gsd → relay references)`);
+      migrated = true;
+    }
+  }
+
+  // Remove old GSD cache
+  const cacheDir = path.join(configDir, 'cache');
+  const oldCacheFile = path.join(cacheDir, 'gsd-update-check.json');
+  if (fs.existsSync(oldCacheFile)) {
+    fs.unlinkSync(oldCacheFile);
+    migrated = true;
+  }
+
+  // Clean up old OpenCode GSD permissions
+  if (fs.existsSync(path.join(configDir, '..', 'opencode', 'opencode.json')) ||
+      configDir.includes('opencode')) {
+    const opencodeConfigDir = getOpencodeGlobalDir();
+    const configPath = path.join(opencodeConfigDir, 'opencode.json');
+    if (fs.existsSync(configPath)) {
+      try {
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        let modified = false;
+        if (config.permission) {
+          for (const permType of ['read', 'external_directory']) {
+            if (config.permission[permType]) {
+              const keys = Object.keys(config.permission[permType]);
+              for (const key of keys) {
+                if (key.includes('get-shit-done')) {
+                  delete config.permission[permType][key];
+                  modified = true;
+                }
+              }
+            }
+          }
+        }
+        if (modified) {
+          fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
+          console.log(`  ${green}✓${reset} Cleaned up old GSD permissions`);
+          migrated = true;
+        }
+      } catch (e) {}
+    }
+  }
+
+  if (migrated) {
+    console.log(`  ${green}✓${reset} GSD → Relay migration complete\n`);
+  }
+}
+
+/**
+ * Clean up orphaned files from previous versions
  */
 function cleanupOrphanedFiles(configDir) {
   const orphanedFiles = [
     'hooks/gsd-notify.sh',  // Removed in v1.6.x
-    'hooks/statusline.js',  // Renamed to gsd-statusline.js in v1.9.0
+    'hooks/statusline.js',  // Renamed to relay-statusline.js in v1.9.0
   ];
 
   for (const relPath of orphanedFiles) {
@@ -714,7 +851,7 @@ function cleanupOrphanedFiles(configDir) {
 function cleanupOrphanedHooks(settings) {
   const orphanedHookPatterns = [
     'gsd-notify.sh',  // Removed in v1.6.x
-    'hooks/statusline.js',  // Renamed to gsd-statusline.js in v1.9.0
+    'hooks/statusline.js',  // Renamed to relay-statusline.js in v1.9.0
     'gsd-intel-index.js',  // Removed in v1.9.2
     'gsd-intel-session.js',  // Removed in v1.9.2
     'gsd-intel-prune.js',  // Removed in v1.9.2
@@ -753,21 +890,21 @@ function cleanupOrphanedHooks(settings) {
   // Fix #330: Update statusLine if it points to old statusline.js path
   if (settings.statusLine && settings.statusLine.command &&
       settings.statusLine.command.includes('statusline.js') &&
-      !settings.statusLine.command.includes('gsd-statusline.js')) {
+      !settings.statusLine.command.includes('relay-statusline.js')) {
     // Replace old path with new path
     settings.statusLine.command = settings.statusLine.command.replace(
       /statusline\.js/,
-      'gsd-statusline.js'
+      'relay-statusline.js'
     );
-    console.log(`  ${green}✓${reset} Updated statusline path (statusline.js → gsd-statusline.js)`);
+    console.log(`  ${green}✓${reset} Updated statusline path (statusline.js → relay-statusline.js)`);
   }
 
   return settings;
 }
 
 /**
- * Uninstall GSD from the specified directory for a specific runtime
- * Removes only GSD-specific files/directories, preserves user content
+ * Uninstall Relay from the specified directory for a specific runtime
+ * Removes only Relay-specific files/directories, preserves user content
  * @param {boolean} isGlobal - Whether to uninstall from global or local
  * @param {string} runtime - Target runtime ('claude', 'opencode', 'gemini')
  */
@@ -788,7 +925,7 @@ function uninstall(isGlobal, runtime = 'claude') {
   if (runtime === 'opencode') runtimeLabel = 'OpenCode';
   if (runtime === 'gemini') runtimeLabel = 'Gemini';
 
-  console.log(`  Uninstalling GSD from ${cyan}${runtimeLabel}${reset} at ${cyan}${locationLabel}${reset}\n`);
+  console.log(`  Uninstalling Relay from ${cyan}${runtimeLabel}${reset} at ${cyan}${locationLabel}${reset}\n`);
 
   // Check if target directory exists
   if (!fs.existsSync(targetDir)) {
@@ -799,61 +936,61 @@ function uninstall(isGlobal, runtime = 'claude') {
 
   let removedCount = 0;
 
-  // 1. Remove GSD commands directory
+  // 1. Remove Relay commands directory
   if (isOpencode) {
-    // OpenCode: remove command/gsd-*.md files
+    // OpenCode: remove command/relay-*.md files
     const commandDir = path.join(targetDir, 'command');
     if (fs.existsSync(commandDir)) {
       const files = fs.readdirSync(commandDir);
       for (const file of files) {
-        if (file.startsWith('gsd-') && file.endsWith('.md')) {
+        if (file.startsWith('relay-') && file.endsWith('.md')) {
           fs.unlinkSync(path.join(commandDir, file));
           removedCount++;
         }
       }
-      console.log(`  ${green}✓${reset} Removed GSD commands from command/`);
+      console.log(`  ${green}✓${reset} Removed Relay commands from command/`);
     }
   } else {
-    // Claude Code & Gemini: remove commands/gsd/ directory
-    const gsdCommandsDir = path.join(targetDir, 'commands', 'gsd');
-    if (fs.existsSync(gsdCommandsDir)) {
-      fs.rmSync(gsdCommandsDir, { recursive: true });
+    // Claude Code & Gemini: remove commands/relay/ directory
+    const relayCommandsDir = path.join(targetDir, 'commands', 'relay');
+    if (fs.existsSync(relayCommandsDir)) {
+      fs.rmSync(relayCommandsDir, { recursive: true });
       removedCount++;
-      console.log(`  ${green}✓${reset} Removed commands/gsd/`);
+      console.log(`  ${green}✓${reset} Removed commands/relay/`);
     }
   }
 
-  // 2. Remove get-shit-done directory
-  const gsdDir = path.join(targetDir, 'get-shit-done');
-  if (fs.existsSync(gsdDir)) {
-    fs.rmSync(gsdDir, { recursive: true });
+  // 2. Remove relay directory
+  const relayDir = path.join(targetDir, 'relay');
+  if (fs.existsSync(relayDir)) {
+    fs.rmSync(relayDir, { recursive: true });
     removedCount++;
-    console.log(`  ${green}✓${reset} Removed get-shit-done/`);
+    console.log(`  ${green}✓${reset} Removed relay/`);
   }
 
-  // 3. Remove GSD agents (gsd-*.md files only)
+  // 3. Remove Relay agents (relay-*.md files only)
   const agentsDir = path.join(targetDir, 'agents');
   if (fs.existsSync(agentsDir)) {
     const files = fs.readdirSync(agentsDir);
     let agentCount = 0;
     for (const file of files) {
-      if (file.startsWith('gsd-') && file.endsWith('.md')) {
+      if (file.startsWith('relay-') && file.endsWith('.md')) {
         fs.unlinkSync(path.join(agentsDir, file));
         agentCount++;
       }
     }
     if (agentCount > 0) {
       removedCount++;
-      console.log(`  ${green}✓${reset} Removed ${agentCount} GSD agents`);
+      console.log(`  ${green}✓${reset} Removed ${agentCount} Relay agents`);
     }
   }
 
-  // 4. Remove GSD hooks
+  // 4. Remove Relay hooks
   const hooksDir = path.join(targetDir, 'hooks');
   if (fs.existsSync(hooksDir)) {
-    const gsdHooks = ['gsd-statusline.js', 'gsd-check-update.js', 'gsd-check-update.sh'];
+    const relayHooks = ['relay-statusline.js', 'relay-check-update.js', 'relay-check-update.sh'];
     let hookCount = 0;
-    for (const hook of gsdHooks) {
+    for (const hook of relayHooks) {
       const hookPath = path.join(hooksDir, hook);
       if (fs.existsSync(hookPath)) {
         fs.unlinkSync(hookPath);
@@ -862,32 +999,32 @@ function uninstall(isGlobal, runtime = 'claude') {
     }
     if (hookCount > 0) {
       removedCount++;
-      console.log(`  ${green}✓${reset} Removed ${hookCount} GSD hooks`);
+      console.log(`  ${green}✓${reset} Removed ${hookCount} Relay hooks`);
     }
   }
 
-  // 5. Clean up settings.json (remove GSD hooks and statusline)
+  // 5. Clean up settings.json (remove Relay hooks and statusline)
   const settingsPath = path.join(targetDir, 'settings.json');
   if (fs.existsSync(settingsPath)) {
     let settings = readSettings(settingsPath);
     let settingsModified = false;
 
-    // Remove GSD statusline if it references our hook
+    // Remove Relay statusline if it references our hook
     if (settings.statusLine && settings.statusLine.command &&
-        settings.statusLine.command.includes('gsd-statusline')) {
+        settings.statusLine.command.includes('relay-statusline')) {
       delete settings.statusLine;
       settingsModified = true;
-      console.log(`  ${green}✓${reset} Removed GSD statusline from settings`);
+      console.log(`  ${green}✓${reset} Removed Relay statusline from settings`);
     }
 
-    // Remove GSD hooks from SessionStart
+    // Remove Relay hooks from SessionStart
     if (settings.hooks && settings.hooks.SessionStart) {
       const before = settings.hooks.SessionStart.length;
       settings.hooks.SessionStart = settings.hooks.SessionStart.filter(entry => {
         if (entry.hooks && Array.isArray(entry.hooks)) {
-          // Filter out GSD hooks
+          // Filter out Relay hooks
           const hasGsdHook = entry.hooks.some(h =>
-            h.command && (h.command.includes('gsd-check-update') || h.command.includes('gsd-statusline'))
+            h.command && (h.command.includes('relay-check-update') || h.command.includes('relay-statusline'))
           );
           return !hasGsdHook;
         }
@@ -895,7 +1032,7 @@ function uninstall(isGlobal, runtime = 'claude') {
       });
       if (settings.hooks.SessionStart.length < before) {
         settingsModified = true;
-        console.log(`  ${green}✓${reset} Removed GSD hooks from settings`);
+        console.log(`  ${green}✓${reset} Removed Relay hooks from settings`);
       }
       // Clean up empty array
       if (settings.hooks.SessionStart.length === 0) {
@@ -922,13 +1059,13 @@ function uninstall(isGlobal, runtime = 'claude') {
         const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         let modified = false;
 
-        // Remove GSD permission entries
+        // Remove Relay permission entries
         if (config.permission) {
           for (const permType of ['read', 'external_directory']) {
             if (config.permission[permType]) {
               const keys = Object.keys(config.permission[permType]);
               for (const key of keys) {
-                if (key.includes('get-shit-done')) {
+                if (key.includes('relay')) {
                   delete config.permission[permType][key];
                   modified = true;
                 }
@@ -947,7 +1084,7 @@ function uninstall(isGlobal, runtime = 'claude') {
         if (modified) {
           fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
           removedCount++;
-          console.log(`  ${green}✓${reset} Removed GSD permissions from opencode.json`);
+          console.log(`  ${green}✓${reset} Removed Relay permissions from opencode.json`);
         }
       } catch (e) {
         // Ignore JSON parse errors
@@ -956,18 +1093,18 @@ function uninstall(isGlobal, runtime = 'claude') {
   }
 
   if (removedCount === 0) {
-    console.log(`  ${yellow}⚠${reset} No GSD files found to remove.`);
+    console.log(`  ${yellow}⚠${reset} No Relay files found to remove.`);
   }
 
   console.log(`
-  ${green}Done!${reset} GSD has been uninstalled from ${runtimeLabel}.
+  ${green}Done!${reset} Relay has been uninstalled from ${runtimeLabel}.
   Your other files and settings have been preserved.
 `);
 }
 
 /**
- * Configure OpenCode permissions to allow reading GSD reference docs
- * This prevents permission prompts when GSD accesses the get-shit-done directory
+ * Configure OpenCode permissions to allow reading Relay reference docs
+ * This prevents permission prompts when Relay accesses the relay directory
  */
 function configureOpencodePermissions() {
   // OpenCode config file is at ~/.config/opencode/opencode.json
@@ -993,12 +1130,12 @@ function configureOpencodePermissions() {
     config.permission = {};
   }
 
-  // Build the GSD path using the actual config directory
+  // Build the Relay path using the actual config directory
   // Use ~ shorthand if it's in the default location, otherwise use full path
   const defaultConfigDir = path.join(os.homedir(), '.config', 'opencode');
-  const gsdPath = opencodeConfigDir === defaultConfigDir
-    ? '~/.config/opencode/get-shit-done/*'
-    : `${opencodeConfigDir}/get-shit-done/*`;
+  const relayPath = opencodeConfigDir === defaultConfigDir
+    ? '~/.config/opencode/relay/*'
+    : `${opencodeConfigDir}/relay/*`;
   
   let modified = false;
 
@@ -1006,8 +1143,8 @@ function configureOpencodePermissions() {
   if (!config.permission.read || typeof config.permission.read !== 'object') {
     config.permission.read = {};
   }
-  if (config.permission.read[gsdPath] !== 'allow') {
-    config.permission.read[gsdPath] = 'allow';
+  if (config.permission.read[relayPath] !== 'allow') {
+    config.permission.read[relayPath] = 'allow';
     modified = true;
   }
 
@@ -1015,8 +1152,8 @@ function configureOpencodePermissions() {
   if (!config.permission.external_directory || typeof config.permission.external_directory !== 'object') {
     config.permission.external_directory = {};
   }
-  if (config.permission.external_directory[gsdPath] !== 'allow') {
-    config.permission.external_directory[gsdPath] = 'allow';
+  if (config.permission.external_directory[relayPath] !== 'allow') {
+    config.permission.external_directory[relayPath] = 'allow';
     modified = true;
   }
 
@@ -1026,7 +1163,7 @@ function configureOpencodePermissions() {
 
   // Write config back
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
-  console.log(`  ${green}✓${reset} Configured read permission for GSD docs`);
+  console.log(`  ${green}✓${reset} Configured read permission for Relay docs`);
 }
 
 /**
@@ -1097,6 +1234,9 @@ function install(isGlobal, runtime = 'claude') {
   // Track installation failures
   const failures = [];
 
+  // Migrate from GSD to Relay (clean up old GSD artifacts)
+  migrateFromGsd(targetDir);
+
   // Clean up orphaned files from previous versions
   cleanupOrphanedFiles(targetDir);
 
@@ -1107,38 +1247,38 @@ function install(isGlobal, runtime = 'claude') {
     const commandDir = path.join(targetDir, 'command');
     fs.mkdirSync(commandDir, { recursive: true });
     
-    // Copy commands/gsd/*.md as command/gsd-*.md (flatten structure)
-    const gsdSrc = path.join(src, 'commands', 'gsd');
-    copyFlattenedCommands(gsdSrc, commandDir, 'gsd', pathPrefix, runtime);
-    if (verifyInstalled(commandDir, 'command/gsd-*')) {
-      const count = fs.readdirSync(commandDir).filter(f => f.startsWith('gsd-')).length;
+    // Copy commands/relay/*.md as command/relay-*.md (flatten structure)
+    const relaySrc = path.join(src, 'commands', 'relay');
+    copyFlattenedCommands(relaySrc, commandDir, 'relay', pathPrefix, runtime);
+    if (verifyInstalled(commandDir, 'command/relay-*')) {
+      const count = fs.readdirSync(commandDir).filter(f => f.startsWith('relay-')).length;
       console.log(`  ${green}✓${reset} Installed ${count} commands to command/`);
     } else {
-      failures.push('command/gsd-*');
+      failures.push('command/relay-*');
     }
   } else {
     // Claude Code & Gemini: nested structure in commands/ directory
     const commandsDir = path.join(targetDir, 'commands');
     fs.mkdirSync(commandsDir, { recursive: true });
     
-    const gsdSrc = path.join(src, 'commands', 'gsd');
-    const gsdDest = path.join(commandsDir, 'gsd');
-    copyWithPathReplacement(gsdSrc, gsdDest, pathPrefix, runtime);
-    if (verifyInstalled(gsdDest, 'commands/gsd')) {
-      console.log(`  ${green}✓${reset} Installed commands/gsd`);
+    const relaySrc = path.join(src, 'commands', 'relay');
+    const relayDest = path.join(commandsDir, 'relay');
+    copyWithPathReplacement(relaySrc, relayDest, pathPrefix, runtime);
+    if (verifyInstalled(relayDest, 'commands/relay')) {
+      console.log(`  ${green}✓${reset} Installed commands/relay`);
     } else {
-      failures.push('commands/gsd');
+      failures.push('commands/relay');
     }
   }
 
-  // Copy get-shit-done skill with path replacement
-  const skillSrc = path.join(src, 'get-shit-done');
-  const skillDest = path.join(targetDir, 'get-shit-done');
+  // Copy relay skill with path replacement
+  const skillSrc = path.join(src, 'relay');
+  const skillDest = path.join(targetDir, 'relay');
   copyWithPathReplacement(skillSrc, skillDest, pathPrefix, runtime);
-  if (verifyInstalled(skillDest, 'get-shit-done')) {
-    console.log(`  ${green}✓${reset} Installed get-shit-done`);
+  if (verifyInstalled(skillDest, 'relay')) {
+    console.log(`  ${green}✓${reset} Installed relay`);
   } else {
-    failures.push('get-shit-done');
+    failures.push('relay');
   }
 
   // Copy agents to agents directory
@@ -1147,10 +1287,10 @@ function install(isGlobal, runtime = 'claude') {
     const agentsDest = path.join(targetDir, 'agents');
     fs.mkdirSync(agentsDest, { recursive: true });
 
-    // Remove old GSD agents (gsd-*.md) before copying new ones
+    // Remove old Relay agents (relay-*.md) before copying new ones
     if (fs.existsSync(agentsDest)) {
       for (const file of fs.readdirSync(agentsDest)) {
-        if (file.startsWith('gsd-') && file.endsWith('.md')) {
+        if (file.startsWith('relay-') && file.endsWith('.md')) {
           fs.unlinkSync(path.join(agentsDest, file));
         }
       }
@@ -1183,7 +1323,7 @@ function install(isGlobal, runtime = 'claude') {
 
   // Copy CHANGELOG.md
   const changelogSrc = path.join(src, 'CHANGELOG.md');
-  const changelogDest = path.join(targetDir, 'get-shit-done', 'CHANGELOG.md');
+  const changelogDest = path.join(targetDir, 'relay', 'CHANGELOG.md');
   if (fs.existsSync(changelogSrc)) {
     fs.copyFileSync(changelogSrc, changelogDest);
     if (verifyFileInstalled(changelogDest, 'CHANGELOG.md')) {
@@ -1194,7 +1334,7 @@ function install(isGlobal, runtime = 'claude') {
   }
 
   // Write VERSION file
-  const versionDest = path.join(targetDir, 'get-shit-done', 'VERSION');
+  const versionDest = path.join(targetDir, 'relay', 'VERSION');
   fs.writeFileSync(versionDest, pkg.version);
   if (verifyFileInstalled(versionDest, 'VERSION')) {
     console.log(`  ${green}✓${reset} Wrote VERSION (${pkg.version})`);
@@ -1232,11 +1372,11 @@ function install(isGlobal, runtime = 'claude') {
   const settingsPath = path.join(targetDir, 'settings.json');
   const settings = cleanupOrphanedHooks(readSettings(settingsPath));
   const statuslineCommand = isGlobal
-    ? buildHookCommand(targetDir, 'gsd-statusline.js')
-    : 'node ' + dirName + '/hooks/gsd-statusline.js';
+    ? buildHookCommand(targetDir, 'relay-statusline.js')
+    : 'node ' + dirName + '/hooks/relay-statusline.js';
   const updateCheckCommand = isGlobal
-    ? buildHookCommand(targetDir, 'gsd-check-update.js')
-    : 'node ' + dirName + '/hooks/gsd-check-update.js';
+    ? buildHookCommand(targetDir, 'relay-check-update.js')
+    : 'node ' + dirName + '/hooks/relay-check-update.js';
 
   // Enable experimental agents for Gemini CLI (required for custom sub-agents)
   if (isGemini) {
@@ -1259,7 +1399,7 @@ function install(isGlobal, runtime = 'claude') {
     }
 
     const hasGsdUpdateHook = settings.hooks.SessionStart.some(entry =>
-      entry.hooks && entry.hooks.some(h => h.command && h.command.includes('gsd-check-update'))
+      entry.hooks && entry.hooks.some(h => h.command && h.command.includes('relay-check-update'))
     );
 
     if (!hasGsdUpdateHook) {
@@ -1304,11 +1444,9 @@ function finishInstall(settingsPath, settings, statuslineCommand, shouldInstallS
   if (runtime === 'opencode') program = 'OpenCode';
   if (runtime === 'gemini') program = 'Gemini';
 
-  const command = isOpencode ? '/gsd-help' : '/gsd:help';
+  const command = isOpencode ? '/relay-help' : '/relay:help';
   console.log(`
   ${green}Done!${reset} Launch ${program} and run ${cyan}${command}${reset}.
-
-  ${cyan}Join the community:${reset} https://discord.gg/5JJgD5svVS
 `);
 }
 
@@ -1347,13 +1485,13 @@ function handleStatusline(settings, isInteractive, callback) {
   Your current statusline:
     ${dim}command: ${existingCmd}${reset}
 
-  GSD includes a statusline showing:
+  Relay includes a statusline showing:
     • Model name
     • Current task (from todo list)
     • Context window usage (color-coded)
 
   ${cyan}1${reset}) Keep existing
-  ${cyan}2${reset}) Replace with GSD statusline
+  ${cyan}2${reset}) Replace with Relay statusline
 `);
 
   rl.question(`  Choice ${dim}[1]${reset}: `, (answer) => {
@@ -1450,7 +1588,7 @@ function promptLocation(runtimes) {
 }
 
 /**
- * Install GSD for all selected runtimes
+ * Install Relay for all selected runtimes
  */
 function installAllRuntimes(runtimes, isGlobal, isInteractive) {
   const results = [];

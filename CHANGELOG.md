@@ -1,10 +1,52 @@
 # Changelog
 
-All notable changes to GSD will be documented in this file.
+All notable changes to Relay (formerly GSD) will be documented in this file.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+
+## [2.0.0] - 2026-02-07
+
+### Breaking Changes
+- **Renamed from "Get Shit Done" (GSD) to "Relay"** — all commands, agents, hooks, and directory references updated
+- Package name changed from `get-shit-done-cc` to `relay-cc`
+- Command prefix changed from `/gsd:` to `/relay:`
+- Agent names changed from `gsd-*` to `relay-*`
+- Data directory changed from `.planning/` to `.relay/`
+
+### Added
+- **Ticket-driven workflow** — fetch tickets from Jira, GitHub Issues, or Azure DevOps via MCP
+- `/relay:setup` — connect to your ticket system, detect MCP integrations
+- `/relay:tickets` — browse available tickets from your connected system
+- `/relay:work <id>` — 6-stage orchestrator: fetch → analyze → plan → confirm → execute → verify & sync
+- `/relay:status` — check current state and route to next action
+- `ANALYSIS.md` — new artifact bridging external tickets and codebase analysis
+- Ticket ID in git branch names and all commit messages
+- Automatic GSD → Relay migration when upgrading (removes old commands, agents, hooks)
+
+### Removed
+- Greenfield project commands: `new-project`, `new-milestone`, `complete-milestone`, `audit-milestone`, `plan-milestone-gaps`
+- Phase management commands: `add-phase`, `insert-phase`, `remove-phase`, `discuss-phase`, `plan-phase`, `execute-phase`, `verify-work`, `research-phase`, `list-phase-assumptions`
+- `join-discord` command
+- `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md` templates (replaced by ticket-based workflow)
+- Milestone/phase-based data model (replaced by ticket-based model)
+
+### Changed
+- `progress` command renamed to `status` with ticket-based display
+- `pause-work` / `resume-work` now operate on tickets instead of phases
+- `relay-phase-researcher` agent renamed to `relay-ticket-researcher` and rewritten for ticket analysis
+- Planner, verifier, and plan-checker agents adapted for ticket requirements
+- Git integration rewritten for ticket-based branching and commits
+- README completely rewritten for ticket-driven workflow
+- New ASCII art banner for "RELAY"
+
+### Upgrading from GSD
+Run `npx relay-cc@latest` — the installer automatically:
+- Removes old `commands/gsd/` directory and `gsd-*.md` agent files
+- Updates hook references from `gsd-*` to `relay-*`
+- Cleans up old cache files
+- Your existing `.planning/` project data is preserved (Relay uses `.relay/` for new projects)
 
 ## [1.11.2] - 2026-02-05
 
