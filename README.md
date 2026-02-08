@@ -306,7 +306,7 @@ Optional agents that improve quality but add tokens and time.
 
 | Setting | Default | What it does |
 |---------|---------|--------------|
-| `planning.commit_docs` | `true` | Track `.relay/` artifacts in git |
+| `planning.commit_docs` | `false` | Track `.relay/` artifacts in git |
 
 ---
 

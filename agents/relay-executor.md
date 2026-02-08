@@ -43,8 +43,8 @@ Options:
 **Load planning config:**
 
 ```bash
-# Check if planning docs should be committed (default: true)
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+# Check if planning docs should be committed (default: false)
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 # Auto-detect gitignored (overrides config)
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
@@ -758,9 +758,9 @@ Resume file: [path to .continue-here if exists, else "None"]
 <final_commit>
 After SUMMARY.md and STATE.md updates:
 
-**If `COMMIT_PLANNING_DOCS=false`:** Skip git operations for planning files, log "Skipping planning docs commit (commit_docs: false)"
+**If `COMMIT_PLANNING_DOCS=false` (default):** Skip git operations for planning files, log "Skipping planning docs commit (commit_docs: false)"
 
-**If `COMMIT_PLANNING_DOCS=true` (default):**
+**If `COMMIT_PLANNING_DOCS=true`:**
 
 **1. Stage execution artifacts:**
 

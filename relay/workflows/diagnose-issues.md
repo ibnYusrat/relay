@@ -159,13 +159,13 @@ Update status in frontmatter to "diagnosed".
 **Check planning config:**
 
 ```bash
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
 
-**If `COMMIT_PLANNING_DOCS=false`:** Skip git operations
+**If `COMMIT_PLANNING_DOCS=false` (default):** Skip git operations
 
-**If `COMMIT_PLANNING_DOCS=true` (default):**
+**If `COMMIT_PLANNING_DOCS=true`:**
 
 Commit the updated UAT.md:
 ```bash

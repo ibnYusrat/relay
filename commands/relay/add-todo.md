@@ -129,13 +129,13 @@ Commit the todo and any updated state:
 **Check planning config:**
 
 ```bash
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
 
-**If `COMMIT_PLANNING_DOCS=false`:** Skip git operations, log "Todo saved (not committed - commit_docs: false)"
+**If `COMMIT_PLANNING_DOCS=false` (default):** Skip git operations, log "Todo saved (not committed - commit_docs: false)"
 
-**If `COMMIT_PLANNING_DOCS=true` (default):**
+**If `COMMIT_PLANNING_DOCS=true`:**
 
 ```bash
 git add .relay/todos/pending/[filename]

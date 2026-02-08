@@ -58,8 +58,8 @@ Options:
 **Load planning config:**
 
 ```bash
-# Check if planning docs should be committed (default: true)
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+# Check if planning docs should be committed (default: false)
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 # Auto-detect gitignored (overrides config)
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
@@ -610,13 +610,13 @@ Update ROADMAP.md to reflect phase completion:
 
 **Check planning config:**
 
-If `COMMIT_PLANNING_DOCS=false` (set in load_project_state):
+If `COMMIT_PLANNING_DOCS=false` (default):
 - Skip all git operations for .relay/ files
-- Planning docs exist locally but are gitignored
+- Planning docs exist locally but are git-excluded
 - Log: "Skipping planning docs commit (commit_docs: false)"
 - Proceed to offer_next step
 
-If `COMMIT_PLANNING_DOCS=true` (default):
+If `COMMIT_PLANNING_DOCS=true`:
 - Continue with git operations below
 
 Commit phase completion (roadmap, state, verification):

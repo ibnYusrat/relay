@@ -5,7 +5,7 @@ Configuration options for `.relay/` directory behavior.
 <config_schema>
 ```json
 "planning": {
-  "commit_docs": true,
+  "commit_docs": false,
   "search_gitignored": false
 },
 "git": {
@@ -17,7 +17,7 @@ Configuration options for `.relay/` directory behavior.
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `commit_docs` | `true` | Whether to commit planning artifacts to git |
+| `commit_docs` | `false` | Whether to commit planning artifacts to git |
 | `search_gitignored` | `false` | Add `--no-ignore` to broad rg searches |
 | `git.branching_strategy` | `"none"` | Git branching approach: `"none"`, `"phase"`, or `"milestone"` |
 | `git.phase_branch_template` | `"relay/phase-{phase}-{slug}"` | Branch template for phase strategy |
@@ -26,21 +26,22 @@ Configuration options for `.relay/` directory behavior.
 
 <commit_docs_behavior>
 
-**When `commit_docs: true` (default):**
+**When `commit_docs: false` (default):**
+- Skip all `git add`/`git commit` for `.relay/` files
+- `.relay/` is added to `.git/info/exclude` during setup
+- Planning docs exist locally but don't pollute git history
+
+**When `commit_docs: true`:**
 - Planning files committed normally
 - SUMMARY.md, STATE.md, ROADMAP.md tracked in git
 - Full history of planning decisions preserved
-
-**When `commit_docs: false`:**
-- Skip all `git add`/`git commit` for `.relay/` files
-- User must add `.relay/` to `.gitignore`
-- Useful for: OSS contributions, client projects, keeping planning private
+- Useful for: teams that want planning docs in version control
 
 **Checking the config:**
 
 ```bash
 # Check config.json first
-COMMIT_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+COMMIT_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 
 # Auto-detect gitignored (overrides config)
 git check-ignore -q .relay 2>/dev/null && COMMIT_DOCS=false
@@ -76,28 +77,31 @@ fi
 
 <setup_uncommitted_mode>
 
-To use uncommitted mode:
+Uncommitted mode is the **default**. During `relay:setup`, `.relay/` is added to `.git/info/exclude` and `commit_docs` is set to `false`. No additional configuration needed.
+
+</setup_uncommitted_mode>
+
+<setup_committed_mode>
+
+To opt into committed mode (track planning docs in git):
 
 1. **Set config:**
    ```json
    "planning": {
-     "commit_docs": false,
-     "search_gitignored": true
+     "commit_docs": true
    }
    ```
 
-2. **Add to .gitignore:**
-   ```
-   .relay/
-   ```
+2. **Remove the exclude entry:**
+   Edit `.git/info/exclude` and remove the `.relay/` line.
 
-3. **Existing tracked files:** If `.relay/` was previously tracked:
+3. **Stage existing files:**
    ```bash
-   git rm -r --cached .relay/
-   git commit -m "chore: stop tracking planning docs"
+   git add .relay/
+   git commit -m "docs: track planning artifacts in git"
    ```
 
-</setup_uncommitted_mode>
+</setup_committed_mode>
 
 <branching_strategy_behavior>
 

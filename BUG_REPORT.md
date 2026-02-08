@@ -72,7 +72,7 @@ The workflows use fragile grep/sed patterns to extract JSON values instead of pr
 # Fragile - fails if JSON is minified or has different spacing
 MODEL_PROFILE=$(cat .relay/config.json 2>/dev/null | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"' || echo "balanced")
 
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 
 BRANCHING_STRATEGY=$(cat .relay/config.json 2>/dev/null | grep -o '"branching_strategy"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/' || echo "none")
 ```
@@ -89,7 +89,7 @@ Use `jq` for robust JSON parsing:
 # Robust JSON parsing
 MODEL_PROFILE=$(jq -r '.model_profile // "balanced"' .relay/config.json 2>/dev/null || echo "balanced")
 
-COMMIT_PLANNING_DOCS=$(jq -r '.commit_docs // true' .relay/config.json 2>/dev/null | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(jq -r '.commit_docs // false' .relay/config.json 2>/dev/null | grep -o 'true\|false' || echo "false")
 
 BRANCHING_STRATEGY=$(jq -r '.branching_strategy // "none"' .relay/config.json 2>/dev/null || echo "none")
 

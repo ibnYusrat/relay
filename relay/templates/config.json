@@ -12,7 +12,7 @@
     "verifier": true
   },
   "planning": {
-    "commit_docs": true,
+    "commit_docs": false,
     "search_gitignored": false
   },
   "parallelization": {

@@ -119,6 +119,14 @@ mkdir -p .relay/quick
 mkdir -p .relay/todos/pending
 ```
 
+## 5b. Exclude `.relay/` from Git
+
+Add `.relay/` to `.git/info/exclude` so planning artifacts stay local by default:
+
+```bash
+grep -qxF '.relay/' .git/info/exclude 2>/dev/null || echo '.relay/' >> .git/info/exclude
+```
+
 ## 6. Write Config
 
 Write `.relay/config.json` with detected settings:
@@ -138,7 +146,7 @@ Write `.relay/config.json` with detected settings:
     "verifier": true
   },
   "planning": {
-    "commit_docs": true,
+    "commit_docs": false,
     "search_gitignored": false
   },
   "parallelization": {

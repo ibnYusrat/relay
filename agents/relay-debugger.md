@@ -982,13 +982,13 @@ mv .relay/debug/{slug}.md .relay/debug/resolved/
 **Check planning config:**
 
 ```bash
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
 
 **Commit the fix:**
 
-If `COMMIT_PLANNING_DOCS=true` (default):
+If `COMMIT_PLANNING_DOCS=true`:
 ```bash
 git add -A
 git commit -m "fix: {brief description}

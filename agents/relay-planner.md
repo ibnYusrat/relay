@@ -985,9 +985,9 @@ After making edits, self-check:
 
 ### Step 6: Commit Revised Plans
 
-**If `COMMIT_PLANNING_DOCS=false`:** Skip git operations, log "Skipping planning docs commit (commit_docs: false)"
+**If `COMMIT_PLANNING_DOCS=false` (default):** Skip git operations, log "Skipping planning docs commit (commit_docs: false)"
 
-**If `COMMIT_PLANNING_DOCS=true` (default):**
+**If `COMMIT_PLANNING_DOCS=true`:**
 
 ```bash
 git add .relay/tickets/$PHASE-*/$PHASE-*-PLAN.md
@@ -1038,8 +1038,8 @@ If STATE.md missing but .relay/ exists, offer to reconstruct or continue without
 **Load planning config:**
 
 ```bash
-# Check if planning docs should be committed (default: true)
-COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "true")
+# Check if planning docs should be committed (default: false)
+COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_docs"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 # Auto-detect gitignored (overrides config)
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
@@ -1256,9 +1256,9 @@ Update ROADMAP.md to finalize phase placeholders created by add-phase or insert-
 <step name="git_commit">
 Commit phase plan(s) and updated roadmap:
 
-**If `COMMIT_PLANNING_DOCS=false`:** Skip git operations, log "Skipping planning docs commit (commit_docs: false)"
+**If `COMMIT_PLANNING_DOCS=false` (default):** Skip git operations, log "Skipping planning docs commit (commit_docs: false)"
 
-**If `COMMIT_PLANNING_DOCS=true` (default):**
+**If `COMMIT_PLANNING_DOCS=true`:**
 
 ```bash
 git add .relay/tickets/$PHASE-*/$PHASE-*-PLAN.md .relay/ROADMAP.md

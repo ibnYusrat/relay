@@ -313,7 +313,7 @@ Usage: `/relay:update`
 
 Configure in `.relay/config.json`:
 
-**`planning.commit_docs`** (default: `true`)
+**`planning.commit_docs`** (default: `false`)
 - `true`: Planning artifacts committed to git
 - `false`: Planning artifacts kept local-only
 
