@@ -27,7 +27,7 @@ npx relay-cc
 
 [How It Works](#how-it-works) · [Getting Started](#getting-started) · [Commands](#commands) · [Configuration](#configuration)
 
-> Fork of [glittercowboy/relay](https://github.com/glittercowboy/relay) (originally [Get Shit Done](https://github.com/glittercowboy/relay)). All credit for the core architecture goes to the original project.
+> Fork of [Get Shit Done (GSD)](https://github.com/glittercowboy/get-shit-done) by [glittercowboy](https://github.com/glittercowboy). All credit for the core architecture goes to the original project.
 
 </div>
 
