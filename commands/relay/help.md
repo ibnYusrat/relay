@@ -110,7 +110,7 @@ Create a pull request from completed ticket work.
 
 - Auto-generates title and description from ticket artifacts
 - Shows preview before creating
-- Pushes branch and creates PR via `gh pr create`
+- Pushes branch and creates PR/MR via configured hosting CLI
 - Optionally posts PR link back to ticket system
 
 Usage: `/relay:pr PROJ-123`

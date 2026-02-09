@@ -6,6 +6,10 @@
     "project_key": null,
     "mcp_server": null
   },
+  "code_hosting": {
+    "type": null,
+    "cli": null
+  },
   "workflow": {
     "research": true,
     "plan_check": true,

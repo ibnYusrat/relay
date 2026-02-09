@@ -31,11 +31,28 @@ Selected upfront via user choice.
 
 ```bash
 test -f .relay/config.json && echo "config exists" || echo "no config"
-command -v gh >/dev/null 2>&1 && echo "gh available" || echo "gh missing"
 ```
 
 If no config: suggest `/relay:setup` and STOP.
-If `gh` CLI not available: report that `gh` is required and STOP.
+
+Read code hosting config from `.relay/config.json`:
+- `code_hosting.type`: `"github"` | `"gitlab"` | `"bitbucket"` | `null`
+- `code_hosting.cli`: `"gh"` | `"glab"` | `null`
+
+If `code_hosting.type` is null: suggest running `/relay:setup` to configure code hosting and STOP.
+
+Check CLI availability for the configured provider:
+
+```bash
+# For github:
+command -v gh >/dev/null 2>&1 && echo "gh available" || echo "gh missing"
+# For gitlab:
+command -v glab >/dev/null 2>&1 && echo "glab available" || echo "glab missing"
+```
+
+If `code_hosting.cli` is null or the CLI binary is not found:
+- For **Bitbucket** or **Other/None**: warn that automated PR listing and posting are not available; the review will use plain git for checkout/diff and the user will provide branch names manually.
+- For **GitHub/GitLab**: report that the required CLI (`gh`/`glab`) is missing and STOP.
 
 Read model profile:
 ```bash
@@ -67,11 +84,34 @@ AskUserQuestion(
 
 ### A1. List Open PRs
 
+**If code_hosting.type == "github":**
 ```bash
 gh pr list --state open --limit 20
 ```
 
-If no open PRs: report and STOP.
+**Else if code_hosting.type == "gitlab":**
+```bash
+glab mr list --state opened --per-page 20
+```
+
+**Else:**
+Automated PR listing is not available. Ask the user for the branch name to review:
+
+```
+AskUserQuestion(
+  header: "Branch",
+  question: "Enter the branch name to review (e.g., feature/my-branch):",
+  options: [
+    { label: "Enter branch", description: "Provide the remote branch name" }
+  ]
+)
+```
+
+Skip to A2 with the user-provided branch name (set `PR_BRANCH` directly).
+
+If using GitHub/GitLab and no open PRs: report and STOP.
+
+If using GitHub/GitLab, present the list for selection:
 
 ```
 AskUserQuestion(
@@ -85,18 +125,76 @@ AskUserQuestion(
 )
 ```
 
-### A2. Save Current Branch and Checkout PR
+### A2. Save Current Branch, Stash Changes, and Checkout PR
 
 ```bash
 ORIGINAL_BRANCH=$(git branch --show-current)
+```
+
+Check for uncommitted changes and stash if present:
+
+```bash
+if [ -n "$(git status --porcelain)" ]; then
+  git stash push -m "relay-review-stash"
+  echo "STASHED=true"
+else
+  echo "STASHED=false"
+fi
+```
+
+Fetch latest and checkout the PR branch:
+
+```bash
 git fetch origin
+```
+
+**If code_hosting.type == "github":**
+```bash
 gh pr checkout ${PR_NUMBER}
+```
+
+**Else if code_hosting.type == "gitlab":**
+```bash
+glab mr checkout ${PR_NUMBER}
+```
+
+**Else (git fallback):**
+```bash
+git checkout ${PR_BRANCH}
 ```
 
 ### A3. Get Diff
 
+**If code_hosting.type == "github":**
 ```bash
 BASE_BRANCH=$(gh pr view ${PR_NUMBER} --json baseRefName --jq '.baseRefName')
+```
+
+**Else if code_hosting.type == "gitlab":**
+```bash
+BASE_BRANCH=$(glab mr view ${PR_NUMBER} --output json | jq -r '.target_branch')
+```
+
+**Else (git fallback):**
+```bash
+BASE_BRANCH=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | sed 's/.*: //')
+BASE_BRANCH=${BASE_BRANCH:-main}
+```
+Ask the user to confirm the base branch (default pre-selected):
+```
+AskUserQuestion(
+  header: "Base",
+  question: "Which branch is this PR targeting? (detected: ${BASE_BRANCH})",
+  options: [
+    { label: "${BASE_BRANCH}", description: "Use detected default branch" },
+    { label: "main", description: "Use main" },
+    { label: "master", description: "Use master" },
+    { label: "develop", description: "Use develop" }
+  ]
+)
+```
+
+```bash
 git diff ${BASE_BRANCH}...HEAD --stat
 git diff ${BASE_BRANCH}...HEAD
 ```
@@ -163,7 +261,7 @@ AskUserQuestion(
   header: "Action",
   question: "What would you like to do with this review?",
   options: [
-    { label: "Post as PR comment", description: "Submit review via gh pr review" },
+    { label: "Post as PR comment", description: "Submit review via hosting CLI" },
     { label: "View full review", description: "Display the complete review document" },
     { label: "Done", description: "Return to original branch" }
   ]
@@ -171,17 +269,35 @@ AskUserQuestion(
 ```
 
 **If "Post as PR comment":**
+
+**If code_hosting.type == "github":**
 ```bash
 gh pr review ${PR_NUMBER} --body "$(cat .relay/reviews/PR-${PR_NUMBER}-review.md)" --comment
 ```
 
-### A6. Restore Original Branch
+**Else if code_hosting.type == "gitlab":**
+```bash
+glab mr note ${PR_NUMBER} --message "$(cat .relay/reviews/PR-${PR_NUMBER}-review.md)"
+```
+
+**Else:**
+Report that posting reviews requires GitHub or GitLab CLI. Offer to display the review locally instead.
+
+### A6. Restore Original Branch and Unstash
 
 ```bash
 git checkout "${ORIGINAL_BRANCH}"
 ```
 
-Always restore the original branch, regardless of action taken.
+If changes were stashed in A2, restore them:
+
+```bash
+if [ "${STASHED}" = "true" ]; then
+  git stash pop
+fi
+```
+
+Always restore the original branch and unstash, regardless of action taken.
 
 ---
 
@@ -189,8 +305,27 @@ Always restore the original branch, regardless of action taken.
 
 ### B1. List Your Open PRs
 
+**If code_hosting.type == "github":**
 ```bash
 gh pr list --state open --author @me --limit 20
+```
+
+**Else if code_hosting.type == "gitlab":**
+```bash
+glab mr list --state opened --author @me --per-page 20
+```
+
+**Else:**
+Automated PR listing is not available. Ask the user for the branch name:
+
+```
+AskUserQuestion(
+  header: "Branch",
+  question: "Enter the branch name of your PR:",
+  options: [
+    { label: "Enter branch", description: "Provide the remote branch name" }
+  ]
+)
 ```
 
 If no open PRs: report and STOP.
@@ -209,11 +344,21 @@ AskUserQuestion(
 
 ### B2. Fetch Review Comments
 
+**If code_hosting.type == "github":**
 ```bash
 REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 gh api repos/${REPO}/pulls/${PR_NUMBER}/comments --jq '.[] | {path: .path, line: .line, body: .body, user: .user.login}'
 gh api repos/${REPO}/pulls/${PR_NUMBER}/reviews --jq '.[] | select(.state != "APPROVED") | {body: .body, user: .user.login, state: .state}'
 ```
+
+**Else if code_hosting.type == "gitlab":**
+```bash
+REPO_ENCODED=$(glab repo view --output json | jq -r '.full_path' | sed 's/\//%2F/g')
+glab api projects/${REPO_ENCODED}/merge_requests/${PR_NUMBER}/notes --jq '.[] | select(.system == false) | {body: .body, author: .author.username}'
+```
+
+**Else:**
+Report that fetching review comments requires GitHub or GitLab CLI. STOP.
 
 ### B3. Display Comments Grouped by File
 
@@ -247,10 +392,34 @@ If "View only": display and STOP.
 
 If "Select specific": let user pick which comments to address.
 
-### B5. Checkout PR Branch and Fix
+### B5. Stash Changes, Checkout PR Branch, and Fix
+
+Save current branch and stash uncommitted changes:
 
 ```bash
+ORIGINAL_BRANCH=$(git branch --show-current)
+if [ -n "$(git status --porcelain)" ]; then
+  git stash push -m "relay-review-stash"
+  echo "STASHED=true"
+else
+  echo "STASHED=false"
+fi
+```
+
+**If code_hosting.type == "github":**
+```bash
 gh pr checkout ${PR_NUMBER}
+```
+
+**Else if code_hosting.type == "gitlab":**
+```bash
+glab mr checkout ${PR_NUMBER}
+```
+
+**Else (git fallback):**
+```bash
+git fetch origin
+git checkout ${PR_BRANCH}
 ```
 
 For each comment to address:
@@ -290,6 +459,20 @@ If "Push":
 git push
 ```
 
+### B8. Restore Original Branch and Unstash
+
+```bash
+git checkout "${ORIGINAL_BRANCH}"
+```
+
+If changes were stashed in B5, restore them:
+
+```bash
+if [ "${STASHED}" = "true" ]; then
+  git stash pop
+fi
+```
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Relay ► COMMENTS ADDRESSED — PR #${PR_NUMBER}
@@ -304,19 +487,26 @@ Pushed: ${YES/NO}
 
 <success_criteria>
 **Mode A:**
-- [ ] PR selected from open PRs
+- [ ] Code hosting provider read from config
+- [ ] PR/MR listed via provider-appropriate CLI (or branch name requested for unsupported providers)
+- [ ] PR selected from open PRs/MRs
 - [ ] Original branch saved
-- [ ] PR branch checked out
+- [ ] Uncommitted changes stashed if present
+- [ ] PR/MR branch checked out (via CLI or plain git)
 - [ ] Diff captured
 - [ ] Reviewer agent produced structured review
 - [ ] Review displayed with recommendation
-- [ ] Action taken (post, view, or skip)
+- [ ] Action taken (post, view, or skip) via provider-appropriate CLI
 - [ ] Original branch restored
+- [ ] Stashed changes restored
 
 **Mode B:**
-- [ ] User's PR selected
-- [ ] Review comments fetched and displayed
+- [ ] Code hosting provider read from config
+- [ ] User's PR/MR listed and selected (or branch name requested for unsupported providers)
+- [ ] Review comments fetched via provider-appropriate API
+- [ ] Uncommitted changes stashed if present
 - [ ] Selected comments addressed with code changes
 - [ ] Each fix committed with descriptive message
 - [ ] Pushed if requested
+- [ ] Original branch restored and stashed changes restored
 </success_criteria>

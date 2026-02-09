@@ -58,6 +58,46 @@ Check for these MCP tool patterns (use tool availability, not execution):
 
 Report what was detected.
 
+## 2b. Detect Code Hosting Provider
+
+Read the git remote URL to auto-detect the code hosting provider:
+
+```bash
+git remote get-url origin 2>/dev/null
+```
+
+**Auto-detect from URL pattern:**
+- Contains `github.com` → `github`
+- Contains `gitlab.com` or `gitlab` → `gitlab`
+- Contains `bitbucket.org` or `bitbucket` → `bitbucket`
+- Otherwise → unknown
+
+Ask user to confirm (pre-select the auto-detected option):
+
+```
+AskUserQuestion(
+  header: "Hosting",
+  question: "Where is your code hosted?",
+  options: [
+    { label: "GitHub", description: "Uses gh CLI for PR operations" },
+    { label: "GitLab", description: "Uses glab CLI for MR operations" },
+    { label: "Bitbucket", description: "PR operations will require manual steps" },
+    { label: "Other/None", description: "Skip code hosting integration" }
+  ]
+)
+```
+
+**Check CLI availability for the selected provider:**
+
+- **GitHub:** `command -v gh >/dev/null 2>&1` — if missing, warn that `gh` CLI is needed for PR operations
+- **GitLab:** `command -v glab >/dev/null 2>&1` — if missing, warn that `glab` CLI is needed for MR operations
+- **Bitbucket:** warn that no official CLI is supported; PR operations will require manual steps
+- **Other/None:** skip CLI check
+
+Store the result:
+- `code_hosting.type`: `"github"` | `"gitlab"` | `"bitbucket"` | `null`
+- `code_hosting.cli`: `"gh"` | `"glab"` | `null` (set to the CLI binary name if available, null otherwise)
+
 ## 3. Configure Integration
 
 Based on detected MCP tools, ask user to confirm:
@@ -139,6 +179,10 @@ Write `.relay/config.json` with detected settings:
     "type": "{jira|github|azure_devops|null}",
     "project_key": "{project_key|null}",
     "mcp_server": "{mcp_server_name|null}"
+  },
+  "code_hosting": {
+    "type": "{github|gitlab|bitbucket|null}",
+    "cli": "{gh|glab|null}"
   },
   "workflow": {
     "research": true,
@@ -233,6 +277,8 @@ SlashCommand("relay:map-codebase")
 |--------------------|--------------------------------|
 | Integration        | {type or "None"}               |
 | Project Key        | {key or "—"}                   |
+| Code Hosting       | {github/gitlab/bitbucket or "None"} |
+| Hosting CLI        | {gh/glab or "—"}               |
 | Codebase Mapped    | {Yes/No}                       |
 
 ## Next Steps
@@ -246,6 +292,7 @@ SlashCommand("relay:map-codebase")
 
 <success_criteria>
 - [ ] MCP integrations detected
+- [ ] Code hosting provider detected and confirmed
 - [ ] Integration type and project key configured
 - [ ] `.relay/` directory structure created
 - [ ] `config.json` written with integration settings

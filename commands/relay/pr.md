@@ -32,12 +32,34 @@ Ticket ID: $ARGUMENTS
 
 ```bash
 test -f .relay/config.json && echo "config exists" || echo "no config"
+```
+
+If no config: suggest `/relay:setup` and STOP.
+
+Read code hosting config from `.relay/config.json`:
+- `code_hosting.type`: `"github"` | `"gitlab"` | `"bitbucket"` | `null`
+- `code_hosting.cli`: `"gh"` | `"glab"` | `null`
+
+If `code_hosting.type` is null: suggest running `/relay:setup` to configure code hosting and STOP.
+
+Check CLI availability and auth for the configured provider:
+
+**If code_hosting.type == "github":**
+```bash
 command -v gh >/dev/null 2>&1 && echo "gh available" || echo "gh missing"
 gh auth status 2>&1 | head -1
 ```
 
-If no config: suggest `/relay:setup` and STOP.
-If `gh` CLI not available or not authenticated: report requirement and STOP.
+**Else if code_hosting.type == "gitlab":**
+```bash
+command -v glab >/dev/null 2>&1 && echo "glab available" || echo "glab missing"
+glab auth status 2>&1 | head -1
+```
+
+**Else (bitbucket/other):**
+Warn that automated PR creation is not available for this hosting provider. Offer to generate the PR description locally and STOP.
+
+If CLI not available or not authenticated: report requirement and STOP.
 
 ## 1. Resolve Ticket ID
 
@@ -152,27 +174,45 @@ If "Edit title": ask for new title, then re-preview.
 If "Edit body": ask for changes, then re-preview.
 If "Cancel": STOP.
 
-## 5. Push and Create PR
+## 5. Push and Create PR/MR
 
 ```bash
 # Push branch
 CURRENT_BRANCH=$(git branch --show-current)
 git push -u origin "${CURRENT_BRANCH}"
+```
 
-# Create PR
+**If code_hosting.type == "github":**
+```bash
 gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base "${BASE_BRANCH}"
 ```
 
-Capture PR URL from output.
+**Else if code_hosting.type == "gitlab":**
+```bash
+glab mr create --title "${PR_TITLE}" --description "${PR_BODY}" --target-branch "${BASE_BRANCH}"
+```
+
+**Else:**
+Report that automated PR creation is not available. Display the generated title and body so the user can create the PR manually.
+
+Capture PR/MR URL from output.
 
 ## 6. Update State
 
 Update STATE.md with PR link:
 
+**If code_hosting.type == "github":**
 ```bash
-# Add PR reference to ticket's section in STATE.md
 PR_URL=$(gh pr view --json url --jq '.url')
 ```
+
+**Else if code_hosting.type == "gitlab":**
+```bash
+PR_URL=$(glab mr view --output json | jq -r '.web_url')
+```
+
+**Else:**
+Skip automated URL retrieval; use the URL captured from Step 5 output if available.
 
 ## 7. Optional: Post PR Link to Ticket System
 
@@ -212,12 +252,13 @@ Branch: ${CURRENT_BRANCH} → ${BASE_BRANCH}
 </process>
 
 <success_criteria>
+- [ ] Code hosting provider read from config
 - [ ] Ticket ID resolved (from argument, STATE.md, or branch)
 - [ ] Ticket artifacts read for context
-- [ ] PR title and body generated from artifacts
+- [ ] PR/MR title and body generated from artifacts
 - [ ] User previewed and approved content
 - [ ] Branch pushed to remote
-- [ ] PR created via `gh pr create`
-- [ ] STATE.md updated with PR link
-- [ ] Optionally synced PR link to ticket system
+- [ ] PR/MR created via provider-appropriate CLI (or description displayed for manual creation)
+- [ ] STATE.md updated with PR/MR link
+- [ ] Optionally synced PR/MR link to ticket system
 </success_criteria>
