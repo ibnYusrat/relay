@@ -1,6 +1,6 @@
 {
   "name": "relay-cc",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Your AI dev agent, connected to your team's workflow. For Claude Code, OpenCode and Gemini CLI by TÂCHES.",
   "bin": {
     "relay-cc": "bin/install.js"
