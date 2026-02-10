@@ -36,8 +36,8 @@ test -f .relay/config.json && echo "config exists" || echo "no config"
 If no config: suggest `/relay:setup` and STOP.
 
 Read code hosting config from `.relay/config.json`:
-- `code_hosting.type`: `"github"` | `"gitlab"` | `"bitbucket"` | `null`
-- `code_hosting.cli`: `"gh"` | `"glab"` | `null`
+- `code_hosting.type`: `"github"` | `"gitlab"` | `"azure_devops"` | `"bitbucket"` | `null`
+- `code_hosting.cli`: `"gh"` | `"glab"` | `"az"` | `null`
 
 If `code_hosting.type` is null: suggest running `/relay:setup` to configure code hosting and STOP.
 
@@ -48,11 +48,13 @@ Check CLI availability for the configured provider:
 command -v gh >/dev/null 2>&1 && echo "gh available" || echo "gh missing"
 # For gitlab:
 command -v glab >/dev/null 2>&1 && echo "glab available" || echo "glab missing"
+# For azure_devops:
+command -v az >/dev/null 2>&1 && az repos pr list --top 1 >/dev/null 2>&1 && echo "az repos available" || echo "az repos missing"
 ```
 
 If `code_hosting.cli` is null or the CLI binary is not found:
 - For **Bitbucket** or **Other/None**: warn that automated PR listing and posting are not available; the review will use plain git for checkout/diff and the user will provide branch names manually.
-- For **GitHub/GitLab**: report that the required CLI (`gh`/`glab`) is missing and STOP.
+- For **GitHub/GitLab/Azure DevOps**: report that the required CLI (`gh`/`glab`/`az`) is missing and STOP.
 
 Read model profile:
 ```bash
@@ -92,6 +94,11 @@ gh pr list --state open --limit 20
 **Else if code_hosting.type == "gitlab":**
 ```bash
 glab mr list --state opened --per-page 20
+```
+
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr list --status active --top 20 --output table
 ```
 
 **Else:**
@@ -158,6 +165,11 @@ gh pr checkout ${PR_NUMBER}
 glab mr checkout ${PR_NUMBER}
 ```
 
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr checkout --id ${PR_NUMBER}
+```
+
 **Else (git fallback):**
 ```bash
 git checkout ${PR_BRANCH}
@@ -173,6 +185,11 @@ BASE_BRANCH=$(gh pr view ${PR_NUMBER} --json baseRefName --jq '.baseRefName')
 **Else if code_hosting.type == "gitlab":**
 ```bash
 BASE_BRANCH=$(glab mr view ${PR_NUMBER} --output json | jq -r '.target_branch')
+```
+
+**Else if code_hosting.type == "azure_devops":**
+```bash
+BASE_BRANCH=$(az repos pr show --id ${PR_NUMBER} --query targetRefName --output tsv | sed 's|refs/heads/||')
 ```
 
 **Else (git fallback):**
@@ -280,8 +297,13 @@ gh pr review ${PR_NUMBER} --body "$(cat .relay/reviews/PR-${PR_NUMBER}-review.md
 glab mr note ${PR_NUMBER} --message "$(cat .relay/reviews/PR-${PR_NUMBER}-review.md)"
 ```
 
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr create-comment --id ${PR_NUMBER} --content "$(cat .relay/reviews/PR-${PR_NUMBER}-review.md)"
+```
+
 **Else:**
-Report that posting reviews requires GitHub or GitLab CLI. Offer to display the review locally instead.
+Report that posting reviews requires GitHub, GitLab, or Azure DevOps CLI. Offer to display the review locally instead.
 
 ### A6. Restore Original Branch and Unstash
 
@@ -313,6 +335,11 @@ gh pr list --state open --author @me --limit 20
 **Else if code_hosting.type == "gitlab":**
 ```bash
 glab mr list --state opened --author @me --per-page 20
+```
+
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr list --status active --creator $(az account show --query user.name --output tsv) --top 20 --output table
 ```
 
 **Else:**
@@ -357,8 +384,13 @@ REPO_ENCODED=$(glab repo view --output json | jq -r '.full_path' | sed 's/\//%2F
 glab api projects/${REPO_ENCODED}/merge_requests/${PR_NUMBER}/notes --jq '.[] | select(.system == false) | {body: .body, author: .author.username}'
 ```
 
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr list-comments --id ${PR_NUMBER} --output json | jq '.[] | select(.commentType == "text") | {content: .content, author: .author.displayName}'
+```
+
 **Else:**
-Report that fetching review comments requires GitHub or GitLab CLI. STOP.
+Report that fetching review comments requires GitHub, GitLab, or Azure DevOps CLI. STOP.
 
 ### B3. Display Comments Grouped by File
 
@@ -414,6 +446,11 @@ gh pr checkout ${PR_NUMBER}
 **Else if code_hosting.type == "gitlab":**
 ```bash
 glab mr checkout ${PR_NUMBER}
+```
+
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr checkout --id ${PR_NUMBER}
 ```
 
 **Else (git fallback):**

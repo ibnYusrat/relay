@@ -115,7 +115,7 @@ const banner = '\n' +
   '\n' +
   '  Relay ' + dim + 'v' + pkg.version + reset + '\n' +
   '  Your AI dev agent, connected to your team\'s workflow.\n' +
-  '  For Claude Code, OpenCode, and Gemini CLI by TÂCHES.\n';
+  '  For Claude Code, OpenCode, and Gemini CLI by ibnyusrat.\n';
 
 // Parse --config-dir argument
 function parseConfigDirArg() {

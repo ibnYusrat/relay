@@ -94,7 +94,7 @@ STOP here if ahead.
 <step name="show_changes_and_confirm">
 **If update available**, fetch and show what's new BEFORE updating:
 
-1. Fetch changelog (same as fetch_changelog step)
+1. Fetch the changelog from `https://raw.githubusercontent.com/ibnYusrat/relay/main/CHANGELOG.md`
 2. Extract entries between installed and latest versions
 3. Display preview and ask for confirmation:
 

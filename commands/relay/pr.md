@@ -37,8 +37,8 @@ test -f .relay/config.json && echo "config exists" || echo "no config"
 If no config: suggest `/relay:setup` and STOP.
 
 Read code hosting config from `.relay/config.json`:
-- `code_hosting.type`: `"github"` | `"gitlab"` | `"bitbucket"` | `null`
-- `code_hosting.cli`: `"gh"` | `"glab"` | `null`
+- `code_hosting.type`: `"github"` | `"gitlab"` | `"azure_devops"` | `"bitbucket"` | `null`
+- `code_hosting.cli`: `"gh"` | `"glab"` | `"az"` | `null`
 
 If `code_hosting.type` is null: suggest running `/relay:setup` to configure code hosting and STOP.
 
@@ -54,6 +54,12 @@ gh auth status 2>&1 | head -1
 ```bash
 command -v glab >/dev/null 2>&1 && echo "glab available" || echo "glab missing"
 glab auth status 2>&1 | head -1
+```
+
+**Else if code_hosting.type == "azure_devops":**
+```bash
+command -v az >/dev/null 2>&1 && echo "az available" || echo "az missing"
+az account show 2>&1 | head -1
 ```
 
 **Else (bitbucket/other):**
@@ -192,6 +198,11 @@ gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base "${BASE_BRANCH}"
 glab mr create --title "${PR_TITLE}" --description "${PR_BODY}" --target-branch "${BASE_BRANCH}"
 ```
 
+**Else if code_hosting.type == "azure_devops":**
+```bash
+az repos pr create --title "${PR_TITLE}" --description "${PR_BODY}" --target-branch "${BASE_BRANCH}" --output json
+```
+
 **Else:**
 Report that automated PR creation is not available. Display the generated title and body so the user can create the PR manually.
 
@@ -210,6 +221,12 @@ PR_URL=$(gh pr view --json url --jq '.url')
 ```bash
 PR_URL=$(glab mr view --output json | jq -r '.web_url')
 ```
+
+**Else if code_hosting.type == "azure_devops":**
+```bash
+PR_URL=$(az repos pr show --id ${PR_ID} --query url --output tsv)
+```
+Note: The PR ID comes from the `az repos pr create` output in step 5.
 
 **Else:**
 Skip automated URL retrieval; use the URL captured from Step 5 output if available.

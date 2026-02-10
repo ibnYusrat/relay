@@ -69,6 +69,7 @@ git remote get-url origin 2>/dev/null
 **Auto-detect from URL pattern:**
 - Contains `github.com` → `github`
 - Contains `gitlab.com` or `gitlab` → `gitlab`
+- Contains `dev.azure.com` or `visualstudio.com` → `azure_devops`
 - Contains `bitbucket.org` or `bitbucket` → `bitbucket`
 - Otherwise → unknown
 
@@ -81,6 +82,7 @@ AskUserQuestion(
   options: [
     { label: "GitHub", description: "Uses gh CLI for PR operations" },
     { label: "GitLab", description: "Uses glab CLI for MR operations" },
+    { label: "Azure DevOps", description: "Uses az repos CLI for PR operations" },
     { label: "Bitbucket", description: "PR operations will require manual steps" },
     { label: "Other/None", description: "Skip code hosting integration" }
   ]
@@ -91,12 +93,13 @@ AskUserQuestion(
 
 - **GitHub:** `command -v gh >/dev/null 2>&1` — if missing, warn that `gh` CLI is needed for PR operations
 - **GitLab:** `command -v glab >/dev/null 2>&1` — if missing, warn that `glab` CLI is needed for MR operations
+- **Azure DevOps:** `command -v az >/dev/null 2>&1 && az repos --help >/dev/null 2>&1` — if missing, warn that `az` CLI with the azure-devops extension is needed for PR operations
 - **Bitbucket:** warn that no official CLI is supported; PR operations will require manual steps
 - **Other/None:** skip CLI check
 
 Store the result:
-- `code_hosting.type`: `"github"` | `"gitlab"` | `"bitbucket"` | `null`
-- `code_hosting.cli`: `"gh"` | `"glab"` | `null` (set to the CLI binary name if available, null otherwise)
+- `code_hosting.type`: `"github"` | `"gitlab"` | `"azure_devops"` | `"bitbucket"` | `null`
+- `code_hosting.cli`: `"gh"` | `"glab"` | `"az"` | `null` (set to the CLI binary name if available, null otherwise)
 
 ## 3. Configure Integration
 
@@ -181,8 +184,8 @@ Write `.relay/config.json` with detected settings:
     "mcp_server": "{mcp_server_name|null}"
   },
   "code_hosting": {
-    "type": "{github|gitlab|bitbucket|null}",
-    "cli": "{gh|glab|null}"
+    "type": "{github|gitlab|azure_devops|bitbucket|null}",
+    "cli": "{gh|glab|az|null}"
   },
   "workflow": {
     "research": true,
@@ -277,8 +280,8 @@ SlashCommand("relay:map-codebase")
 |--------------------|--------------------------------|
 | Integration        | {type or "None"}               |
 | Project Key        | {key or "—"}                   |
-| Code Hosting       | {github/gitlab/bitbucket or "None"} |
-| Hosting CLI        | {gh/glab or "—"}               |
+| Code Hosting       | {github/gitlab/azure_devops/bitbucket or "None"} |
+| Hosting CLI        | {gh/glab/az or "—"}             |
 | Codebase Mapped    | {Yes/No}                       |
 
 ## Next Steps

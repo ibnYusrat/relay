@@ -51,8 +51,8 @@ Parse current values (default to `true` if not present):
 - `git.branching_strategy` — branching approach (default: `"none"`)
 - `integration.type` — connected ticket system (jira, github, azure_devops, or null)
 - `integration.project_key` — project identifier for ticket system
-- `code_hosting.type` — code hosting provider (github, gitlab, bitbucket, or null)
-- `code_hosting.cli` — hosting CLI binary (gh, glab, or null)
+- `code_hosting.type` — code hosting provider (github, gitlab, azure_devops, bitbucket, or null)
+- `code_hosting.cli` — hosting CLI binary (gh, glab, az, or null)
 
 ## 3. Present Settings
 
@@ -149,7 +149,7 @@ Display:
 | Plan Checker         | {On/Off} |
 | Execution Verifier   | {On/Off} |
 | Git Branching        | {None/Per Phase/Per Ticket} |
-| Code Hosting         | {github/gitlab/bitbucket or "None"} |
+| Code Hosting         | {github/gitlab/azure_devops/bitbucket or "None"} |
 
 These settings apply to future `/relay:work` runs.
 

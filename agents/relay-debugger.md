@@ -986,6 +986,20 @@ COMMIT_PLANNING_DOCS=$(cat .relay/config.json 2>/dev/null | grep -o '"commit_doc
 git check-ignore -q .relay 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
 
+**Verify NOT on default branch before committing:**
+
+NEVER commit to the default branch. No exceptions.
+
+```bash
+DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | sed 's/.*: //')
+DEFAULT_BRANCH=${DEFAULT_BRANCH:-main}
+CURRENT_BRANCH=$(git branch --show-current)
+if [ "${CURRENT_BRANCH}" = "${DEFAULT_BRANCH}" ]; then
+  echo "ERROR: On default branch (${DEFAULT_BRANCH}). Cannot commit. Create a working branch first."
+  exit 1
+fi
+```
+
 **Commit the fix:**
 
 If `COMMIT_PLANNING_DOCS=true`:

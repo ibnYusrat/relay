@@ -9,6 +9,24 @@ Git integration for Relay framework.
 The git log should read like a changelog of what shipped, not a diary of planning activity.
 </core_principle>
 
+<default_branch_protection>
+
+**NEVER commit to the default branch.**
+
+Before any git commit, verify the current branch is NOT the default branch (main, master, or whatever `git remote show origin | grep 'HEAD branch'` returns). If you are on the default branch, STOP and create a working branch first. There are no exceptions to this rule — no hotfix, no "just one small change", no override. All work is committed on a non-default branch and merged via PR.
+
+```bash
+DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | sed 's/.*: //')
+DEFAULT_BRANCH=${DEFAULT_BRANCH:-main}
+CURRENT_BRANCH=$(git branch --show-current)
+if [ "${CURRENT_BRANCH}" = "${DEFAULT_BRANCH}" ]; then
+  echo "ERROR: On default branch (${DEFAULT_BRANCH}). Create a working branch before committing."
+  exit 1
+fi
+```
+
+</default_branch_protection>
+
 <commit_points>
 
 | Event                   | Commit? | Why                                              |
@@ -179,6 +197,8 @@ Each ticket produces 2-5 commits (tasks + metadata). Clear, granular, bisectable
 - Handoff state (wip)
 
 **Key principle:** Commit working code and shipped outcomes, not planning process.
+
+**Absolute rule:** Never commit directly to the default branch. Always work on a non-default branch.
 
 </anti_patterns>
 

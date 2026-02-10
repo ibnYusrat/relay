@@ -549,6 +549,20 @@ When executing a task with `tdd="true"` attribute, follow RED-GREEN-REFACTOR cyc
 <task_commit_protocol>
 After each task completes (verification passed, done criteria met), commit immediately.
 
+**0. Verify NOT on default branch:**
+
+NEVER commit to the default branch. No exceptions. If on the default branch, STOP and report the error.
+
+```bash
+DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | sed 's/.*: //')
+DEFAULT_BRANCH=${DEFAULT_BRANCH:-main}
+CURRENT_BRANCH=$(git branch --show-current)
+if [ "${CURRENT_BRANCH}" = "${DEFAULT_BRANCH}" ]; then
+  echo "ERROR: On default branch (${DEFAULT_BRANCH}). Cannot commit. Create a working branch first."
+  exit 1
+fi
+```
+
 **1. Identify modified files:**
 
 ```bash

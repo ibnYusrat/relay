@@ -1,7 +1,7 @@
 {
   "name": "relay-cc",
-  "version": "2.0.6",
-  "description": "Your AI dev agent, connected to your team's workflow. For Claude Code, OpenCode and Gemini CLI by TÂCHES.",
+  "version": "2.0.7",
+  "description": "Your AI dev agent, connected to your team's workflow. For Claude Code, OpenCode and Gemini CLI.",
   "bin": {
     "relay-cc": "bin/install.js"
   },
@@ -23,7 +23,7 @@
     "gemini",
     "gemini-cli"
   ],
-  "author": "TÂCHES",
+  "author": "ibnyusrat",
   "license": "MIT",
   "repository": {
     "type": "git",
